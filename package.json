@@ -10,7 +10,7 @@
         }
     },
     "dependencies": {
-        "@gausma/libsignal-service-javascript": "^0.1.0",
+        "@gausma/libsignal-service-javascript": "^1.3.0",
         "node-localstorage": "^2.1.6",
         "bytebuffer": "^5.0.1"
     },
