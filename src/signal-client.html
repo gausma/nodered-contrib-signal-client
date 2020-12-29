@@ -1,0 +1,194 @@
+<!-- configuration -->
+
+<script type="text/javascript">
+    RED.nodes.registerType('account', {
+        category: 'config',
+        defaults: {
+            phoneNumber: { value: "", required: true },
+            password: { value: "", required: true },
+            dataStorePath: { value: "./DataStore", required: true },
+            liveServer: { value: false },
+            accountName: { value: "" },
+        },
+        label: function () {
+            return this.accountName || this.phoneNumber;
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="account">
+    <div class="form-row">
+        <label for="node-config-input-phoneNumber"><i class="fa fa-phone"></i> Phone Number</label>
+        <input type="text" id="node-config-input-phoneNumber" placeholder="+4955512345678">
+    </div>
+    <div class="form-tips form-row">
+        <b>Tip:</b> The phone number must to be noted in <a href="https://en.wikipedia.org/wiki/E.123" target_="_blank">E.123</a> format (without spaces). For instance a german phone number (555) 1234-5678 would be written +4955512345678.
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-ellipsis-h"></i> Password</label>
+        <input type="text" id="node-config-input-password">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-dataStorePath"><i class="fa fa-database"></i> Data Store Path</label>
+        <input type="text" id="node-config-input-dataStorePath" placeholder="Data Store Path">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-liveServer"><i class="fa fa-paper-plane"></i> Live Server</label>
+        <input type="checkbox" id="node-config-input-liveServer" style="display: inline-block; width: auto; vertical-align: top;">
+    </div>    
+    <div class="form-row">
+        <label for="node-config-input-accountName"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-accountName" placeholder="Name">
+    </div>
+</script>
+
+
+<!-- request-sms -->
+
+<script type="text/javascript">
+    RED.nodes.registerType('request-sms', {
+        category: 'Signal Client',
+        color: '#a6bbcf',
+        defaults: {
+            server: { value: "", type: "remote-server" },
+            account: { value: "", type: "account" },
+            name: { value: "", required: false },
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "icons/signal.png",
+        label: function () {
+            return this.name || "request-sms";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="request-sms">
+    <div class="form-row">
+        <label for="node-input-account"><i class="fa fa-globe"></i> Account</label>
+        <input id="node-input-account">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="request-sms">
+    <p>Request a registration code from Singnal Messenger. It will be send via sms.</p>
+</script>
+
+
+<!-- register -->
+
+<script type="text/javascript">
+    RED.nodes.registerType('register', {
+        category: 'Signal Client',
+        color: '#a6bbcf',
+        defaults: {
+            account: { value: "", type: "account" },
+            registrationCode: { value: "", required: true },
+            name: { value: "", required: false },
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "icons/signal.png",
+        label: function () {
+            return this.name || "register";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="register">
+    <div class="form-row">
+        <label for="node-input-account"><i class="fa fa-globe"></i> Account</label>
+        <input id="node-input-account">
+    </div>
+    <div class="form-row">
+        <label for="node-input-registrationCode"><i class="fa fa-registered"></i> Registration Code</label>
+        <input type="text" id="node-input-registrationCode">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="register">
+    <p>Register on Signal Messenger with the use of the registration code.</p>
+</script>
+
+
+<!-- send -->
+
+<script type="text/javascript">
+    RED.nodes.registerType('send', {
+        category: 'Signal Client',
+        color: '#a6bbcf',
+        defaults: {
+            account: { value: "", type: "account" },
+            receiverNumber: { value: "", required: true },
+            name: { value: "", required: false },
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "icons/signal.png",
+        label: function () {
+            return this.name || "send";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="send">
+    <div class="form-row">
+        <label for="node-input-account"><i class="fa fa-globe"></i> Account</label>
+        <input id="node-input-account">
+    </div>
+    <div class="form-row">
+        <label for="node-input-receiverNumber"><i class="fa fa-phone"></i> Receiver Number</label>
+        <input type="text" id="node-input-receiverNumber" placeholder="+4955512345678">
+    </div>    
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-tips" style="width: auto"><b>Tip:</b> The receiver number must to be noted in <a href="https://en.wikipedia.org/wiki/E.123" target_="_blank">E.123</a> format (without spaces). For instance a german phone number (555) 1234-5678 would be written +4955512345678.</div>
+</script>
+
+<script type="text/html" data-help-name="send">
+    <p>Send a message via Signal Messenger.</p>
+</script>
+
+
+<!-- receive -->
+<script type="text/javascript">
+    RED.nodes.registerType('receive', {
+        category: 'Signal Client',
+        color: '#a6bbcf',
+        defaults: {
+            account: { value: "", type: "account" },
+            name: { value: "", required: false },
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "icons/signal.png",
+        label: function () {
+            return this.name || "receive";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="receive">
+    <div class="form-row">
+        <label for="node-input-account"><i class="fa fa-tag"></i> Account</label>
+        <input id="node-input-account">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="receive">
+    <p>Receive a message via Singnal Messenger.</p>
+</script>
