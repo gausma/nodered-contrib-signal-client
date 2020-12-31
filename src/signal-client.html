@@ -6,7 +6,7 @@
         defaults: {
             phoneNumber: { value: "", required: true },
             password: { value: "", required: true },
-            dataStorePath: { value: "./DataStore", required: true },
+            dataStoreDirectory: { value: "", required: true },
             liveServer: { value: false },
             accountName: { value: "" },
         },
@@ -29,8 +29,11 @@
         <input type="text" id="node-config-input-password">
     </div>
     <div class="form-row">
-        <label for="node-config-input-dataStorePath"><i class="fa fa-database"></i> Data Store Path</label>
-        <input type="text" id="node-config-input-dataStorePath" placeholder="Data Store Path">
+        <label for="node-config-input-dataStoreDirectory"><i class="fa fa-database"></i> Data Store</label>
+        <input type="text" id="node-config-input-dataStoreDirectory" placeholder="Data store directory, e.g. Account1">
+    </div>
+    <div class="form-tips form-row">
+        <b>Tip:</b> The Data store directory must be a unique name that complies with the guidelines of the file system. It can only be assigned once for all accounts.
     </div>
     <div class="form-row">
         <label for="node-config-input-liveServer"><i class="fa fa-paper-plane"></i> Live Server</label>
@@ -106,7 +109,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-registrationCode"><i class="fa fa-registered"></i> Registration Code</label>
-        <input type="text" id="node-input-registrationCode">
+        <input type="text" id="node-input-registrationCode" placeholder="Registration code received via SMS, e.g. 123-456">
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
@@ -149,10 +152,12 @@
         <input type="text" id="node-input-receiverNumber" placeholder="+4955512345678">
     </div>    
     <div class="form-row">
+        <div class="form-tips" style="width: auto"><b>Tip:</b> The receiver number must to be noted in <a href="https://en.wikipedia.org/wiki/E.123" target_="_blank">E.123</a> format (without spaces). For instance a german phone number (555) 1234-5678 would be written +4955512345678.</div>
+    </div>    
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-    <div class="form-tips" style="width: auto"><b>Tip:</b> The receiver number must to be noted in <a href="https://en.wikipedia.org/wiki/E.123" target_="_blank">E.123</a> format (without spaces). For instance a german phone number (555) 1234-5678 would be written +4955512345678.</div>
 </script>
 
 <script type="text/html" data-help-name="send">
@@ -161,6 +166,7 @@
 
 
 <!-- receive -->
+
 <script type="text/javascript">
     RED.nodes.registerType('receive', {
         category: 'Signal Client',

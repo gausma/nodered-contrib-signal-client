@@ -1,5 +1,6 @@
 const libsignal = require("@gausma/libsignal-service-javascript");
 const Storage = require("./LocalSignalProtocolStore.js");
+const path = require('path');
 
 function getConfiguration(production) {
     if (production) {
@@ -24,11 +25,12 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         this.phoneNumber = config.phoneNumber;
         this.password = config.password;
-        this.dataStorePath = config.dataStorePath;
+        this.dataStoreDirectory = config.dataStoreDirectory;
         this.liveServer = config.liveServer;
         this.accountName = config.accountName;
 
-        this.protocolStore = new libsignal.ProtocolStore(new Storage(this.dataStorePath));
+        const dataStoreDirectory = path.join(RED.settings.userDir, this.dataStoreDirectory);
+        this.protocolStore = new libsignal.ProtocolStore(new Storage(dataStoreDirectory));
         this.protocolStore.load(); // Todo await?
     }
     RED.nodes.registerType("account", AccountNode);
