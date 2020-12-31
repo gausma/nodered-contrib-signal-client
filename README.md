@@ -51,9 +51,9 @@ Select the account for which the registration code was requested. Enter the regi
 
 Both nodes can be executed by a simple "inject" node.
 
-<b>Don't forget to "Deplay" after configure the single nodes!</b>
+<b>Don't forget to "Deploy" after configure the single nodes!</b>
 
-<b>After the registration is complete, the Node-RED server must be restarted. The registration is currently only effective for the send and receive nodes.</b>
+<b>After the registration is complete, the Node-RED server must be restarted. Otherweise the registration is not effective for the send and receive nodes!</b>
 
 ## Sending a message
 The "send" node is used to send a message.
