@@ -1,6 +1,6 @@
 {
     "name": "nodered-contrib-signal-client",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Signal communicator client nodes for Node-RED",
     "author": "Martin Gaus",
     "license": "GPL-3.0",
@@ -19,5 +19,9 @@
         "signal",
         "communicator",
         "client"
-    ]
+    ],
+    "repository" : {
+        "type" : "git",
+        "url" : "https://github.com/gausma/nodered-contrib-signal-client"
+    }    
 }
