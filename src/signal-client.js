@@ -1,22 +1,36 @@
+/**
+ * Created by Martin Gaus
+ */
+
 const libsignal = require("@gausma/libsignal-service-javascript");
 const Storage = require("./LocalSignalProtocolStore.js");
-const path = require('path');
+const path = require("path");
 
-function getConfiguration(production) {
-    if (production) {
-        return libsignal.config.product;
-    }
-    return libsignal.config.develop;
-}
-
-function getServerTrustRoot(production) {
-    if (production) {
-        return libsignal.serverTrustRoot.product;
-    }
-    return libsignal.serverTrustRoot.develop;
-}
+const signalDir = "signal";
 
 module.exports = function(RED) {
+    /**
+     * Determine the configuration for production or development purpose
+     * @param production
+     */
+    function getConfiguration(production) {
+        if (production) {
+            return libsignal.config.product;
+        }
+        return libsignal.config.develop;
+    }
+
+    /**
+     * Determine the trusted root for production or development purpose
+     * @param production
+     */
+    function getServerTrustRoot(production) {
+        if (production) {
+            return libsignal.serverTrustRoot.product;
+        }
+        return libsignal.serverTrustRoot.develop;
+    }
+
     /**
      * Account configuration node
      * @param config Configuration
@@ -29,7 +43,7 @@ module.exports = function(RED) {
         this.liveServer = config.liveServer;
         this.accountName = config.accountName;
 
-        const dataStoreDirectory = path.join(RED.settings.userDir, this.dataStoreDirectory);
+        const dataStoreDirectory = path.join(RED.settings.userDir, signalDir, this.dataStoreDirectory);
         this.protocolStore = new libsignal.ProtocolStore(new Storage(dataStoreDirectory));
         this.protocolStore.load(); // Todo await?
     }

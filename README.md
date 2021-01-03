@@ -18,7 +18,7 @@ The nodes are tested with `Node.js v14.15.3` and `Node-RED v1.2.6`.
  - [node-localstorage](https://github.com/lmaccherone/node-localstorage)
  - [bytebuffer](https://github.com/protobufjs/bytebuffer.js)
 
- # Changelog
+# Changelog
 Changes can be followed [here](/CHANGELOG.md).
 
 # Usage
@@ -34,7 +34,7 @@ A Signal Communicator Account is tied to a phone number. When experimenting you 
 
 The password is an arbitrary string used for authentication against the Signal API, it will be registered with the Signal servers as part of the registration process.
 
-The registration data determined are saved in the Node-RED settings. A directory is created within your Node-RED settings. The directory must be unique across all accounts. You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red,  Windows: C:\Users\USER\.node-red)
+The registration data determined are saved in the Node-RED settings. A directory is created within your Node-RED settings. The directory must be unique across all accounts. You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red/signal,  Windows: C:\Users\USER\.node-red\signal)
 
 Live Server: For safety, a Signal staging server (testing server) can be used  while you carry out your experiments. This means that it will only send and receive messages from other clients using the staging server! 
 
@@ -53,7 +53,7 @@ Both nodes can be executed by a simple "inject" node.
 
 <b>Don't forget to "Deploy" after configure the single nodes!</b>
 
-<b>After the registration is complete, the Node-RED server must be restarted. Otherweise the registration is not effective for the send and receive nodes!</b>
+<b>A "Deploy" or Node-RED restart is also necessary after registration. This will update all receive nodes with the registration information.</b>
 
 ## Sending a message
 The "send" node is used to send a message.

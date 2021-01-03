@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] 2021-01-03
+### Changes
+- Save all account info in sub directory "signal" to avoid conflicts. Reregistration is neccessary.
+
 ## [1.1.0] 2020-12-31
 ### Changes
  - Documentation.
