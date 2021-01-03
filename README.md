@@ -26,11 +26,12 @@ Changes can be followed [here](/CHANGELOG.md).
 A Registration is required so that you can communicate via Signal. Registering an account takes place in two phases:
 
 ### Request a registration code
-First, you'll request a registration code from the Signal server that you are authorized to use this number. The registration code can be queried through a special node: request-sms
+First, you'll request a registration code from the Signal server that you are authorized to use this number. The registration code can be queried through special nodes: request-sms or request-voice
 
 <img src="images/RegistrationRequestSMS.png" title="Request SMS" />
+<img src="images/RegistrationRequestVoice.png" title="Request Voice" />
 
-A Signal Communicator Account is tied to a phone number. When experimenting you probably want to get a temporary phone number via an online service like Google Voice or Twilio rather than clobbering the keys for your own phone.
+The configuration of a Signal Communicator registration takes place in an account. An Account is tied to a phone number. When experimenting you probably want to get a temporary phone number via an online service like Google Voice rather than clobbering the keys for your own phone.
 
 The password is an arbitrary string used for authentication against the Signal API, it will be registered with the Signal servers as part of the registration process.
 
@@ -53,7 +54,7 @@ Both nodes can be executed by a simple "inject" node.
 
 <b>Don't forget to "Deploy" after configure the single nodes!</b>
 
-<b>A "Deploy" or Node-RED restart is also necessary after registration. This will update all receive nodes with the registration information.</b>
+<b>A "Deploy" or Node-RED restart is also necessary if the account for a receiver node is changed - especially after registration. This will restart all receive nodes with the actual configuration.</b>
 
 ## Sending a message
 The "send" node is used to send a message.

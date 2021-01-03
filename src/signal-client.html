@@ -53,7 +53,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('request-sms', {
         category: 'Signal Client',
-        color: '#a6bbcf',
+        color: '#5692f3',
         defaults: {
             server: { value: "", type: "remote-server" },
             account: { value: "", type: "account" },
@@ -80,7 +80,43 @@
 </script>
 
 <script type="text/html" data-help-name="request-sms">
-    <p>Request a registration code from Singnal Messenger. It will be send via sms.</p>
+    <p>Request a registration code from Singnal Messenger. It is send via sms.</p>
+</script>
+
+
+<!-- request-voice -->
+
+<script type="text/javascript">
+    RED.nodes.registerType('request-voice', {
+        category: 'Signal Client',
+        color: '#5692f3',
+        defaults: {
+            server: { value: "", type: "remote-server" },
+            account: { value: "", type: "account" },
+            name: { value: "", required: false },
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "icons/signal.png",
+        label: function () {
+            return this.name || "request-voice";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="request-voice">
+    <div class="form-row">
+        <label for="node-input-account"><i class="fa fa-globe"></i> Account</label>
+        <input id="node-input-account">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="request-voice">
+    <p>Request a registration code from Singnal Messenger. It is transmitted by voice message.</p>
 </script>
 
 
@@ -89,7 +125,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('register', {
         category: 'Signal Client',
-        color: '#a6bbcf',
+        color: '#5692f3',
         defaults: {
             account: { value: "", type: "account" },
             registrationCode: { value: "", required: true },
@@ -129,7 +165,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('send', {
         category: 'Signal Client',
-        color: '#a6bbcf',
+        color: '#5692f3',
         defaults: {
             account: { value: "", type: "account" },
             receiverNumber: { value: "", required: true },
@@ -172,7 +208,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('receive', {
         category: 'Signal Client',
-        color: '#a6bbcf',
+        color: '#5692f3',
         defaults: {
             account: { value: "", type: "account" },
             name: { value: "", required: false },

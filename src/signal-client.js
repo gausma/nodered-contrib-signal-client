@@ -81,6 +81,37 @@ module.exports = function(RED) {
     RED.nodes.registerType("request-sms", RequestSMSNode);
 
     /**
+     * Request a registration object via voice call
+     * @param config Configuration object
+     */
+    function RequestVoiceNode(config) {
+        RED.nodes.createNode(this, config);
+        var node = this;
+
+        node.on("input", async msg => {
+            this.account = RED.nodes.getNode(config.account);
+            if (this.account && this.account.phoneNumber && this.account.password && this.account.protocolStore) {
+                try {
+                    const configuration = getConfiguration(this.account.liveServer);
+                    const accountManager = new libsignal.AccountManager(
+                        this.account.phoneNumber,
+                        this.account.password,
+                        this.account.protocolStore,
+                        configuration,
+                    );
+                    await accountManager.requestVoiceVerification();
+                    node.log("Registration code requested via voice call.");
+                } catch (err) {
+                    node.error(err);
+                }
+            } else {
+                node.error("Please configure an account.");
+            }
+        });
+    }
+    RED.nodes.registerType("request-voice", RequestVoiceNode);
+
+    /**
      * Register the client
      * @param config Configuration object
      */
