@@ -28,8 +28,7 @@ A Registration is required so that you can communicate via Signal. Registering a
 ### Request a registration code
 First, you'll request a registration code from the Signal server that you are authorized to use this number. The registration code can be queried through special nodes: request-sms or request-voice
 
-<img src="images/RegistrationRequestSMS.png" title="Request SMS" />
-<img src="images/RegistrationRequestVoice.png" title="Request Voice" />
+<img src="images/RegistrationRequestNodes.png" title="Request Nodes" />
 
 The configuration of a Signal Communicator registration takes place in an account. An Account is tied to a phone number. When experimenting you probably want to get a temporary phone number via an online service like Google Voice rather than clobbering the keys for your own phone.
 
