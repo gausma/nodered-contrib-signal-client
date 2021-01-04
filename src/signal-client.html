@@ -169,6 +169,7 @@
         defaults: {
             account: { value: "", type: "account" },
             receiverNumber: { value: "", required: true },
+            verboseLogging: { value: false },
             name: { value: "", required: false },
         },
         inputs: 1,
@@ -193,6 +194,10 @@
         <div class="form-tips" style="width: auto"><b>Tip:</b> The receiver number must to be noted in <a href="https://en.wikipedia.org/wiki/E.123" target_="_blank">E.123</a> format (without spaces). For instance a german phone number (555) 1234-5678 would be written +4955512345678.</div>
     </div>    
     <div class="form-row">
+        <label for="node-input-verboseLogging"><i class="fa fa-search"></i> Verbose Logging</label>
+        <input type="checkbox" id="node-input-verboseLogging" style="display: inline-block; width: auto; vertical-align: top;">
+    </div>    
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -211,6 +216,7 @@
         color: '#5692f3',
         defaults: {
             account: { value: "", type: "account" },
+            verboseLogging: { value: false },
             name: { value: "", required: false },
         },
         inputs: 0,
@@ -224,9 +230,13 @@
 
 <script type="text/html" data-template-name="receive">
     <div class="form-row">
-        <label for="node-input-account"><i class="fa fa-tag"></i> Account</label>
+        <label for="node-input-account"><i class="fa fa-globe"></i> Account</label>
         <input id="node-input-account">
     </div>
+    <div class="form-row">
+        <label for="node-input-verboseLogging"><i class="fa fa-search"></i> Verbose Logging</label>
+        <input type="checkbox" id="node-input-verboseLogging" style="display: inline-block; width: auto; vertical-align: top;">
+    </div>    
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">

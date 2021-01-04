@@ -69,12 +69,12 @@ module.exports = function(RED) {
                         configuration,
                     );
                     await accountManager.requestSMSVerification();
-                    node.log("Registration code requested via sms.");
+                    node.log("Signal client: registration code requested via sms.");
                 } catch (err) {
                     node.error(err);
                 }
             } else {
-                node.error("Please configure an account.");
+                node.error("Signal client: please configure an account.");
             }
         });
     }
@@ -100,12 +100,12 @@ module.exports = function(RED) {
                         configuration,
                     );
                     await accountManager.requestVoiceVerification();
-                    node.log("Registration code requested via voice call.");
+                    node.log("Signal client: registration code requested via voice call.");
                 } catch (err) {
                     node.error(err);
                 }
             } else {
-                node.error("Please configure an account.");
+                node.error("Signal client: please configure an account.");
             }
         });
     }
@@ -137,12 +137,12 @@ module.exports = function(RED) {
                     );
                     const registrationCode = config.registrationCode.replace("-", "");
                     await accountManager.registerSingleDevice(registrationCode);
-                    node.log("Registration performed.");
+                    node.log("Signal client: registration performed.");
                 } catch (err) {
                     node.error(err);
                 }
             } else {
-                node.error("Please configure an account and the registration code.");
+                node.error("Signal client: please configure an account and the registration code.");
             }
         });
     }
@@ -166,12 +166,15 @@ module.exports = function(RED) {
                         number: config.receiverNumber,
                         body: msg.payload,
                     });
-                    node.log(`Message sent: ${JSON.stringify(result)}`);
+
+                    if (config.verboseLogging) {
+                        node.log(`Signal client message sent: ${JSON.stringify(result)}`);
+                    }
                 } catch (err) {
                     node.error(JSON.stringify(err));
                 }
             } else {
-                node.error("Please configure an acoount, a receiver number and provide an payload in the message.");
+                node.error("Signal client: please configure an acoount, a receiver number and provide an payload in the message.");
             }
         });
     }
@@ -193,12 +196,8 @@ module.exports = function(RED) {
                 .connect()
                 .then(() => {
                     messageReceiver.addEventListener("message", event => {
-                        node.log("*** EVENT ***:" + JSON.stringify(event));
-                        if (event.data.message.group) {
-                            node.log(event.data.message.group);
-                            node.log(`Received message in group ${event.data.message.group.id}: ${event.data.message.body}`);
-                        } else {
-                            node.log("Received message: " + event.data.message.body);
+                        if (config.verboseLogging) {
+                            node.log(`Signal client message received: ${JSON.stringify(event)}`);
                         }
 
                         const message = {
@@ -213,7 +212,7 @@ module.exports = function(RED) {
                     node.error(JSON.stringify(err));
                 });
         } else {
-            node.error("Please configure an acoount.");
+            node.error("Signal client: please configure an acoount.");
         }
     }
     RED.nodes.registerType("receive", ReceiveNode);

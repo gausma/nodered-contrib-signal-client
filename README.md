@@ -62,6 +62,8 @@ The "send" node is used to send a message.
 
 A previously registered account is selected as sender. The recipient's telephone number is configured for receiving the message.
 
+The "Verbose Logging" checkbox is activated for extended log outputs in the Node-RED log. The logs are not  shown in the "Debug messages" sidebar.
+
 <img src="images/SendNodeConfiguration.png" title="Send node configuration" />
 
 The message to be sent is transferred in the payload as string when the node is executed. A simple flow can look like this:
@@ -74,6 +76,8 @@ The "receive" node is used to receive a message.
 <img src="images/ReceiveNode.png" title="Receive node" />
 
 A previously registered account is selected as receiver.
+
+The "Verbose Logging" checkbox is activated for extended log outputs in the Node-RED log. The logs are not  shown in the "Debug messages" sidebar.
 
 <img src="images/ReceiveNodeConfiguration.png" title="Receive node configuration" />
 
