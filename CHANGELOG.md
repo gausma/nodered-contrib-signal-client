@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] 2021-01-04
+### Fixed
+- Message receiver management.
+
 ## [1.3.0] 2021-01-04
 ### Added
 - Verbose Logging for send and receive.

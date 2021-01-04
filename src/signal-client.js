@@ -10,6 +10,11 @@ const signalDir = "signal";
 
 module.exports = function(RED) {
     /**
+     * Message receiver management
+     */
+    const messageReceivers = {};
+
+    /**
      * Determine the configuration for production or development purpose
      * @param production
      */
@@ -187,11 +192,22 @@ module.exports = function(RED) {
     function ReceiveNode(config) {
         RED.nodes.createNode(this, config);
         var node = this;
+
+        node.on("close", async function() {
+            if (messageReceivers[node.id]) {
+                await messageReceivers[node.id].stopProcessing();
+            }
+            delete messageReceivers[node.id];
+        });
+
         this.account = RED.nodes.getNode(config.account);
         if (this.account && this.account.protocolStore) {
             const configuration = getConfiguration(this.account.liveServer);
             const serverTrustRoot = getServerTrustRoot(this.account.liveServer);
             const messageReceiver = new libsignal.MessageReceiver(this.account.protocolStore, null, {}, configuration, serverTrustRoot);
+
+            messageReceivers[node.id] = messageReceiver;
+
             messageReceiver
                 .connect()
                 .then(() => {
