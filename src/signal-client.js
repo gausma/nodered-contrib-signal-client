@@ -16,7 +16,8 @@ module.exports = function(RED) {
 
     /**
      * Determine the configuration for production or development purpose
-     * @param production
+     * @param production Production flag
+     * @returns Configuration
      */
     function getConfiguration(production) {
         if (production) {
@@ -27,13 +28,40 @@ module.exports = function(RED) {
 
     /**
      * Determine the trusted root for production or development purpose
-     * @param production
+     * @param production Production flag
+     * @returns Configuration
      */
     function getServerTrustRoot(production) {
         if (production) {
             return libsignal.serverTrustRoot.product;
         }
         return libsignal.serverTrustRoot.develop;
+    }
+
+    /**
+     * Helper function for sending a success message for an node with 2 outputs
+     * @param node Node
+     * @param message Message
+     */
+    function sendSuccess(node, message) {
+        node.log(message);
+        const msg = {
+            payload: message
+        }
+        node.send([msg, null]);
+    }
+
+    /**
+     * Helper function for sending anerror message for an node with 2 outputs
+     * @param node Node
+     * @param message Message
+     */
+    function sendError(node, message) {
+        node.error(message);
+        const msg = {
+            payload: message
+        }
+        node.send([null, msg]);
     }
 
     /**
@@ -62,7 +90,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on("input", async msg => {
+        node.on("input", async function() {
             this.account = RED.nodes.getNode(config.account);
             if (this.account && this.account.phoneNumber && this.account.password && this.account.protocolStore) {
                 try {
@@ -74,12 +102,12 @@ module.exports = function(RED) {
                         configuration,
                     );
                     await accountManager.requestSMSVerification();
-                    node.log("Signal client: registration code requested via sms.");
+                    sendSuccess(node, "Signal client: registration code requested via sms.");
                 } catch (err) {
-                    node.error(err);
+                    sendError(node, `Signal client error: ${err.toString()}`);
                 }
             } else {
-                node.error("Signal client: please configure an account.");
+                sendError(node, "Signal client: please configure an account.");
             }
         });
     }
@@ -93,7 +121,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        node.on("input", async msg => {
+        node.on("input", async function() {
             this.account = RED.nodes.getNode(config.account);
             if (this.account && this.account.phoneNumber && this.account.password && this.account.protocolStore) {
                 try {
@@ -105,12 +133,12 @@ module.exports = function(RED) {
                         configuration,
                     );
                     await accountManager.requestVoiceVerification();
-                    node.log("Signal client: registration code requested via voice call.");
+                    sendSuccess(node, "Signal client: registration code requested via voice call.");
                 } catch (err) {
-                    node.error(err);
+                    sendError(node, `Signal client error: ${err.toString()}`);
                 }
             } else {
-                node.error("Signal client: please configure an account.");
+                sendError(node, "Signal client: please configure an account.");
             }
         });
     }
@@ -123,7 +151,7 @@ module.exports = function(RED) {
     function RegisterNode(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        node.on("input", async msg => {
+        node.on("input", async function() {
             this.account = RED.nodes.getNode(config.account);
             if (
                 this.account &&
@@ -142,25 +170,56 @@ module.exports = function(RED) {
                     );
                     const registrationCode = config.registrationCode.replace("-", "");
                     await accountManager.registerSingleDevice(registrationCode);
-                    node.log("Signal client: registration performed.");
+                    sendSuccess(node, "Signal client: registration performed.");
                 } catch (err) {
-                    node.error(err);
+                    sendError(node, `Signal client error: ${err.toString()}`);
                 }
             } else {
-                node.error("Signal client: please configure an account and the registration code.");
+                sendError(node, "Signal client: please configure an account and the registration code.");
             }
         });
     }
     RED.nodes.registerType("register", RegisterNode);
 
     /**
-     *  Send a message
+     * Send a message
+     * 
+     * Result on success:
+     * {
+     *     "successfulIdentifiers": ["+34634058xxx"],
+     *     "failoverIdentifiers": [],
+     *     "errors": [],
+     *     "unidentifiedDeliveries": [],
+     *     "dataMessage": {
+     *         "type": "Buffer",
+     *         "data": [10, 19, 72, 97, 108, 108, 111, ...]
+     *     }
+     * }
+     * 
+     * Result on error:
+     * {
+     *     "successfulIdentifiers": [],
+     *     "failoverIdentifiers": [],
+     *     "errors": [{
+     *             "name": "UnregisteredUserError",
+     *             "identifier": "+4915902934xxx",
+     *             "code": 404,
+     *             "reason": "Failed to retrieve new device keys for number +4915902934xxx"
+     *         }
+     *     ],
+     *     "unidentifiedDeliveries": [],
+     *     "dataMessage": {
+     *         "type": "Buffer",
+     *         "data": [10, 19, 72, 97, 108, 108, 111, ...]
+     *     }
+     * }
+     * 
      * @param config Configuration object
      */
     function SendNode(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        node.on("input", async msg => {
+        node.on("input", async function(msg) {
             this.account = RED.nodes.getNode(config.account);
             if (this.account && this.account.protocolStore && config.receiverNumber && msg.payload) {
                 try {
@@ -169,14 +228,23 @@ module.exports = function(RED) {
                     await messageSender.connect();
                     const result = await messageSender.sendMessageToNumber({
                         number: config.receiverNumber,
-                        body: msg.payload,
+                        body: msg.payload.content,
                     });
 
                     if (config.verboseLogging) {
                         node.log(`Signal client message sent: ${JSON.stringify(result)}`);
                     }
+
+                    const returnMessage = {
+                        payload: {
+                            receiverNumber: config.receiverNumber,
+                            content: msg.payload.content,    
+                        }
+                    }
+                    node.send([returnMessage, null]);
                 } catch (err) {
-                    node.error(JSON.stringify(err));
+                    node.error(`Signal client error: ${err.toString()}`);
+                    node.send([null, err]);
                 }
             } else {
                 node.error("Signal client: please configure an acoount, a receiver number and provide an payload in the message.");
@@ -186,7 +254,24 @@ module.exports = function(RED) {
     RED.nodes.registerType("send", SendNode);
 
     /**
-     *  Receive a message
+     * Receive a message
+     * 
+     * Raw event data:
+     * {
+     *     "type": "message",
+     *     "data": {
+     *         "source": "+33752836xxx",
+     *         "sourceUuid": "4ffb3c93-21c7-497c-a8f8-ca7499ad56e3",
+     *         "sourceDevice": 1,
+     *         "timestamp": 1610308571384,
+     *         "message": {
+     *             "body": "Hello MAG",
+     *             "profileKey": "",
+     *             "timestamp": "1610308571384"
+     *         }
+     *     }
+     * }
+     * 
      * @param config Configuration object
      */
     function ReceiveNode(config) {
@@ -210,26 +295,51 @@ module.exports = function(RED) {
 
             messageReceiver
                 .connect()
-                .then(() => {
-                    messageReceiver.addEventListener("message", event => {
+                .then(function() {
+                    messageReceiver.addEventListener("message", function(event) {
                         if (config.verboseLogging) {
                             node.log(`Signal client message received: ${JSON.stringify(event)}`);
                         }
 
                         const message = {
-                            payload: event.data.message.body,
+                            payload: {
+                                content: event.data.message.body,
+                                senderNumber: event.data.source,
+                                senderUuid: event.data.sourceUuid,
+                            },
+                            originalMessage: event.data
                         };
                         node.send(message);
 
                         event.confirm();
                     });
                 })
-                .catch(err => {
-                    node.error(JSON.stringify(err));
+                .catch(function(err) {
+                    node.error(`Signal client error: ${err.toString()}`);
+                    node.send([null, err]);
                 });
         } else {
             node.error("Signal client: please configure an acoount.");
         }
     }
     RED.nodes.registerType("receive", ReceiveNode);
+
+    /**
+     * Action route to trigger nodes. The actions are send by node buttons (see client code).
+     */
+    RED.httpAdmin.post("/signal-client/:id", RED.auth.needsPermission("inject.write"), function(req, res) {
+        var node = RED.nodes.getNode(req.params.id);
+        if (node != null) {
+            try {
+                node.receive();
+                res.sendStatus(200);
+            } catch (err) {
+                node.error(`Signal client: action for node '${req.params.id}' failed: ${err.toString()}`);
+                res.sendStatus(500);
+            }
+        } else {
+            node.error(`Signal client: action received for an invalid node id '${req.params.id}'`);
+            res.sendStatus(404);
+        }
+    });    
 };

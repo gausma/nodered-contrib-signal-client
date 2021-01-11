@@ -1,5 +1,5 @@
 # nodered-contrib-signal-client
-[Signal](https://signal.org) communicator client nodes for Node-RED
+[Signal](https://signal.org) communicator client nodes to use the more secure messenger in Node-RED.
 
 This is a third-party effort, and is NOT a part of the official [Signal](https://signal.org) project or any other project of [Open Whisper Systems](https://whispersystems.org).
 
@@ -32,7 +32,7 @@ First, you'll request a registration code from the Signal server that you are au
 
 The configuration of a Signal Communicator registration takes place in an account. An Account is tied to a phone number. When experimenting you probably want to get a temporary phone number via an online service like Google Voice rather than clobbering the keys for your own phone.
 
-The password is an arbitrary string used for authentication against the Signal API, it will be registered with the Signal servers as part of the registration process.
+The password is an arbitrary string used for authentication against the Signal API. It will be registered with the Signal servers as part of the registration process.
 
 The registration data determined are saved in the Node-RED settings. A directory is created within your Node-RED settings. The directory must be unique across all accounts. You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red/signal,  Windows: C:\Users\USER\.node-red\signal)
 
@@ -40,20 +40,35 @@ Live Server: For safety, a Signal staging server (testing server) can be used  w
 
 <img src="images/RegistrationRequestSMSConfiguration.png" title="Request SMS Configuration" />
 
+__Interface__
+| I/O      | Execution          | Message Properties | Type   | Description     |
+| :------- | :----------------- | :----------------- | :----- | :-------------- |
+| Input    | Injection button   | -                  | -      | -               |
+| Output 1 | Successful request | payload            | string | Success message |
+| Output 2 | Error on request   | payload            | string | Failure message |
+
 ### Confirm the registration code
-You'll receive an SMS message with an registration code at the number your specified. Use the code to register your account with the Signal service:
+You'll receive an SMS message or a voice call with an registration code at the number your specified. Use the code to register your account with the Signal service:
 
 <img src="images/RegistrationRegister.png" title="Registration" />
 
-Select the account for which the registration code was requested. Enter the registration code as received (format: nnn-nnn)
+Select the account for which the registration code was requested. Enter the registration code as received (format: "nnn-nnn" or "nnnnnn")
 
 <img src="images/RegistrationRegisterConfiguration.png" title="Registration Configuration" />
 
-Both nodes can be executed by a simple "inject" node.
+__Don't forget to "Deploy" after configure the single nodes!__
 
-<b>Don't forget to "Deploy" after configure the single nodes!</b>
+__A "Deploy" or Node-RED restart is also necessary if the account for a receiver node is changed - especially after registration. This will restart all receive nodes with the actual configuration.__
 
-<b>A "Deploy" or Node-RED restart is also necessary if the account for a receiver node is changed - especially after registration. This will restart all receive nodes with the actual configuration.</b>
+__Success messages are not displayed in the "Debug messages" sidebar. You can connect a debug node to output 1 for this. 
+This is not necessary for error messages. These are always output in the sidebar and in the log.__
+
+__Interface__
+| I/O      | Execution          | Message Properties | Type   | Description     |
+| :------- | :----------------- | :----------------- | :----- | :-------------- |
+| Input    | Injection button   | -                  | -      | -               |
+| Output 1 | Successful request | payload            | string | Success message |
+| Output 2 | Error on request   | payload            | string | Failure message |
 
 ## Sending a message
 The "send" node is used to send a message.
@@ -62,13 +77,21 @@ The "send" node is used to send a message.
 
 A previously registered account is selected as sender. The recipient's telephone number is configured for receiving the message.
 
-The "Verbose Logging" checkbox is activated for extended log outputs in the Node-RED log. The logs are not  shown in the "Debug messages" sidebar.
+The "Verbose Logging" checkbox is activated for extended log outputs in the Node-RED log. The logs are not shown in the "Debug messages" sidebar.
 
 <img src="images/SendNodeConfiguration.png" title="Send node configuration" />
 
 The message to be sent is transferred in the payload as string when the node is executed. A simple flow can look like this:
 
 <img src="images/SendFlow1.png" title="Send flow 1" />
+
+__Interface__
+| I/O      | Execution       | Message Properties     | Type   | Description                 |
+| :------- | :-------------- | :--------------------- | :----- | :-------------------------- |
+| Input    | Send message    | payload.content        | string | Message to send             |
+| Output 1 | Successful sent | payload.receiverNumber | string | The receiver's phone number |
+|          |                 | payload.content        | string | Sent message                |
+| Output 2 | Error on sent   | payload                | object | Failure message object      |
 
 ## Reveiving a message
 The "receive" node is used to receive a message.
@@ -85,6 +108,53 @@ The received message is contained in the payload of the output. A simple flow ca
 
 <img src="images/ReceiveFlow1.png" title="Receive flow 1" />
 
+__To avoid problems ensure that you connect maximal one receiver node to one account.__
+
+__Interface__
+| I/O      | Execution          | Message Properties   | Type   | Description                        |
+| :------- | :----------------- | :------------------- | :----- | :--------------------------------- |
+| Input    | -                  | -                    | -      | -                                  |
+| Output 1 | Successful receive | payload.content      | string | Received message content           |
+|          |                    | payload.senderNumber | string | The sender's phone number          |
+|          |                    | payload.senderUuid   | string | The sender's unique identification |
+|          |                    | originalMessage      | string | Original received object from the underlying library [@gausma/libsignal-service-javascript](https://github.com/gausma/nodered-contrib-signal-client) |
+| Output 2 | Error on receive   | payload              | object | Failure message object             |
+
+# Examples
+
+---
+Remark: All example flows can be found in the examples folder of this package. In Node-RED they can be imported via the import function (hambuger menu). Select the examples directly from the "Examples" vertical tab menue.
+---
+
+## 1 Registration flow
+The registration code is requested either by the request-sms node or the request-voice node. The transmitted registration code is entered in the register node and the registration is carried out.
+
+To display the success message you can connect a debug message to output 1. This is not necessary for error messages. These are always output in the sidebar and in the log.
+
+<img src="images/Example01.png" title="Example 01" />
+
+Example: 01_registration
+
+## 2 Simple receive
+Use a Receive node to receive a message from your friend. A message that is sent to the configured account is displayed as a debug message. The telephone number and the id of the seder are also logged.
+
+<img src="images/Example02.png" title="Example 02" />
+
+Example: 02_simple-receive
+
+## 3 Simple send
+You can send a message to your friend with the send node. In the example, the message is created by an inject node and thus the send node is triggered. The message is output in the debug node as confirmation.
+
+<img src="images/Example03.png" title="Example 03" />
+
+Example: 03_simple-send
+
+## 4 Simple echo
+A simple flow: the received message is returned to the sender. This flow represents the basis for a command flow and can be expanded accordingly. See further examples.
+
+<img src="images/Example04.png" title="Example 04" />
+
+Example: 04_simple-echo
 
 
 # License

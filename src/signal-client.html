@@ -1,5 +1,40 @@
 <!-- Created by Martin Gaus -->
 
+<!-- Button injections -->
+<script type="text/javascript">
+    function inject(node) {
+        if (node.changed) {
+            return RED.notify("<strong>Warning</strong>: node has undeployed changes", "warning");
+        }
+
+        var label = node._def.label.call(node);
+        if (label.length > 30) {
+            label = label.substring(0, 50) + "...";
+        }
+        label = label.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        $.ajax({
+            url: "signal-client/" + node.id,
+            type: "POST",
+            success: function (resp) {
+                RED.notify(`Successfully injected: ${label}`, { type: "success", id: node.type });
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status == 404) {
+                    RED.notify("<strong>Error</strong>: node not deployed", "error");
+                } else if (jqXHR.status == 500) {
+                    RED.notify("<strong>Error</strong>: inject failed, see log for details", "error");
+                } else if (jqXHR.status == 0) {
+                    RED.notify("<strong>Error</strong>: no response from server", "error");
+                } else {
+                    RED.notify(`<strong>Error</strong>: unexpected error ${jqXHR.status} ${textStatus}`, "error");
+                }
+            }
+        });
+    }
+</script>
+
+
 <!-- configuration -->
 
 <script type="text/javascript">
@@ -59,9 +94,17 @@
             account: { value: "", type: "account" },
             name: { value: "", required: false },
         },
-        inputs: 1,
-        outputs: 0,
-        icon: "signal.png",
+        inputs: 0,
+        outputs: 2,
+        button: {
+            enabled: function () {
+                return !this.changed
+            },
+            onclick: function () {              
+                inject(this);
+            }
+        },
+        icon: "signal-registration.png",
         label: function () {
             return this.name || "request-sms";
         }
@@ -95,9 +138,17 @@
             account: { value: "", type: "account" },
             name: { value: "", required: false },
         },
-        inputs: 1,
-        outputs: 0,
-        icon: "signal.png",
+        inputs: 0,
+        outputs: 2,
+        button: {
+            enabled: function () {
+                return !this.changed
+            },
+            onclick: function () {              
+                inject(this);
+            }
+        },        
+        icon: "signal-registration.png",
         label: function () {
             return this.name || "request-voice";
         }
@@ -131,9 +182,17 @@
             registrationCode: { value: "", required: true },
             name: { value: "", required: false },
         },
-        inputs: 1,
-        outputs: 0,
-        icon: "signal.png",
+        inputs: 0,
+        outputs: 2,
+        button: {
+            enabled: function () {
+                return !this.changed
+            },
+            onclick: function () {              
+                inject(this);
+            }
+        },        
+        icon: "signal-registration.png",
         label: function () {
             return this.name || "register";
         }
@@ -173,7 +232,7 @@
             name: { value: "", required: false },
         },
         inputs: 1,
-        outputs: 0,
+        outputs: 2,
         icon: "signal.png",
         label: function () {
             return this.name || "send";
@@ -220,7 +279,7 @@
             name: { value: "", required: false },
         },
         inputs: 0,
-        outputs: 1,
+        outputs: 2,
         icon: "signal.png",
         label: function () {
             return this.name || "receive";
