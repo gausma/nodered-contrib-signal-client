@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] 2021-01-11
+### Fixed
+- Docs.
+
 ## [2.0.0] 2021-01-10
 ### Changed
 - Inject button for the registration nodes (input removed).

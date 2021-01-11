@@ -40,12 +40,12 @@ Live Server: For safety, a Signal staging server (testing server) can be used  w
 
 <img src="images/RegistrationRequestSMSConfiguration.png" title="Request SMS Configuration" />
 
-__Interface__
+### Interface
 | I/O      | Execution          | Message Properties | Type   | Description     |
 | :------- | :----------------- | :----------------- | :----- | :-------------- |
 | Input    | Injection button   | -                  | -      | -               |
-| Output 1 | Successful request | payload            | string | Success message |
-| Output 2 | Error on request   | payload            | string | Failure message |
+| Output_1 | Successful request | payload            | string | Success message |
+| Output_2 | Error on request   | payload            | string | Failure message |
 
 ### Confirm the registration code
 You'll receive an SMS message or a voice call with an registration code at the number your specified. Use the code to register your account with the Signal service:
@@ -63,12 +63,12 @@ __A "Deploy" or Node-RED restart is also necessary if the account for a receiver
 __Success messages are not displayed in the "Debug messages" sidebar. You can connect a debug node to output 1 for this. 
 This is not necessary for error messages. These are always output in the sidebar and in the log.__
 
-__Interface__
+### Interface
 | I/O      | Execution          | Message Properties | Type   | Description     |
 | :------- | :----------------- | :----------------- | :----- | :-------------- |
 | Input    | Injection button   | -                  | -      | -               |
-| Output 1 | Successful request | payload            | string | Success message |
-| Output 2 | Error on request   | payload            | string | Failure message |
+| Output_1 | Successful request | payload            | string | Success message |
+| Output_2 | Error on request   | payload            | string | Failure message |
 
 ## Sending a message
 The "send" node is used to send a message.
@@ -85,13 +85,13 @@ The message to be sent is transferred in the payload as string when the node is 
 
 <img src="images/SendFlow1.png" title="Send flow 1" />
 
-__Interface__
+### Interface
 | I/O      | Execution       | Message Properties     | Type   | Description                 |
 | :------- | :-------------- | :--------------------- | :----- | :-------------------------- |
 | Input    | Send message    | payload.content        | string | Message to send             |
-| Output 1 | Successful sent | payload.receiverNumber | string | The receiver's phone number |
+| Output_1 | Successful sent | payload.receiverNumber | string | The receiver's phone number |
 |          |                 | payload.content        | string | Sent message                |
-| Output 2 | Error on sent   | payload                | object | Failure message object      |
+| Output_2 | Error on sent   | payload                | object | Failure message object      |
 
 ## Reveiving a message
 The "receive" node is used to receive a message.
@@ -110,20 +110,22 @@ The received message is contained in the payload of the output. A simple flow ca
 
 __To avoid problems ensure that you connect maximal one receiver node to one account.__
 
-__Interface__
+### Interface
 | I/O      | Execution          | Message Properties   | Type   | Description                        |
 | :------- | :----------------- | :------------------- | :----- | :--------------------------------- |
 | Input    | -                  | -                    | -      | -                                  |
-| Output 1 | Successful receive | payload.content      | string | Received message content           |
+| Output_1 | Successful receive | payload.content      | string | Received message content           |
 |          |                    | payload.senderNumber | string | The sender's phone number          |
 |          |                    | payload.senderUuid   | string | The sender's unique identification |
 |          |                    | originalMessage      | string | Original received object from the underlying library [@gausma/libsignal-service-javascript](https://github.com/gausma/nodered-contrib-signal-client) |
-| Output 2 | Error on receive   | payload              | object | Failure message object             |
+| Output_2 | Error on receive   | payload              | object | Failure message object             |
 
 # Examples
 
 ---
+
 Remark: All example flows can be found in the examples folder of this package. In Node-RED they can be imported via the import function (hambuger menu). Select the examples directly from the "Examples" vertical tab menue.
+
 ---
 
 ## 1 Registration flow
