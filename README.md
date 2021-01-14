@@ -13,7 +13,7 @@ Or run the following command in the root directory of your Node-RED installation
     npm install nodered-contrib-signal-client --save
 
 # Dependencies
-The nodes are tested with `Node.js v14.15.3` and `Node-RED v1.2.6`.
+The nodes are tested with `Node.js v14.15.3` and `Node-RED v1.2.6` on Windows and Raspberry Pi OS.
  - [@gausma/libsignal-service-javascript](https://github.com/gausma/nodered-contrib-signal-client)
  - [node-localstorage](https://github.com/lmaccherone/node-localstorage)
  - [bytebuffer](https://github.com/protobufjs/bytebuffer.js)
@@ -38,7 +38,7 @@ The registration data determined are saved in the Node-RED settings. A directory
 
 Live Server: For safety, a Signal staging server (testing server) can be used  while you carry out your experiments. This means that it will only send and receive messages from other clients using the staging server! 
 
-<img src="images/RegistrationRequestSMSConfiguration.png" title="Request SMS Configuration" />
+<img src="images/RegistrationRequestConfiguration.png" title="Request SMS Configuration" />
 
 ### Interface
 | I/O      | Execution          | Message Properties | Type   | Description     |
@@ -75,7 +75,9 @@ The "send" node is used to send a message.
 
 <img src="images/SendNode.png" title="Send node" />
 
-A previously registered account is selected as sender. The recipient's telephone number is configured for receiving the message.
+A previously registered account is selected as sender.
+
+The recipient's phone number can be configured to receive the message. Optionally, it can be passed in the message. If the number is in the message, it will be used (instead of the configured one). Output 1 forwards the sent message. The recipient number actually used is entered in this message.
 
 The "Verbose Logging" checkbox is activated for extended log outputs in the Node-RED log. The logs are not shown in the "Debug messages" sidebar.
 
@@ -89,7 +91,8 @@ The message to be sent is transferred in the payload as string when the node is 
 | I/O      | Execution       | Message Properties     | Type   | Description                 |
 | :------- | :-------------- | :--------------------- | :----- | :-------------------------- |
 | Input    | Send message    | payload.content        | string | Message to send             |
-| Output_1 | Successful sent | payload.receiverNumber | string | The receiver's phone number |
+|          |                 | payload.receiverNumber | string | The receiver's phone number (optional) |
+| Output_1 | Successful sent | payload.receiverNumber | string | Used receiver's phone number, either from the message or configured |
 |          |                 | payload.content        | string | Sent message                |
 | Output_2 | Error on sent   | payload                | object | Failure message object      |
 

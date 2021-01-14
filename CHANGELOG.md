@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] 2021-01-14
+### Added
+- Send the receiver number in the message payload.
+
 ## [2.0.2] 2021-01-14
 ### Fixed
 - Show error details in log and 2nd output ([#4](https://github.com/gausma/nodered-contrib-signal-client/issues/4)).
