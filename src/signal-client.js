@@ -46,8 +46,8 @@ module.exports = function(RED) {
     function sendSuccess(node, message) {
         node.log(message);
         const msg = {
-            payload: message
-        }
+            payload: message,
+        };
         node.send([msg, null]);
     }
 
@@ -59,8 +59,8 @@ module.exports = function(RED) {
     function sendError(node, message) {
         node.error(message);
         const msg = {
-            payload: message
-        }
+            payload: message,
+        };
         node.send([null, msg]);
     }
 
@@ -104,7 +104,8 @@ module.exports = function(RED) {
                     await accountManager.requestSMSVerification();
                     sendSuccess(node, "Signal client: registration code requested via sms.");
                 } catch (err) {
-                    sendError(node, `Signal client error: ${err.toString()}`);
+                    node.error(`Signal client error: ${JSON.stringify(err)}`);
+                    node.send([null, { payload: err }]);
                 }
             } else {
                 sendError(node, "Signal client: please configure an account.");
@@ -135,7 +136,8 @@ module.exports = function(RED) {
                     await accountManager.requestVoiceVerification();
                     sendSuccess(node, "Signal client: registration code requested via voice call.");
                 } catch (err) {
-                    sendError(node, `Signal client error: ${err.toString()}`);
+                    node.error(`Signal client error: ${JSON.stringify(err)}`);
+                    node.send([null, { payload: err }]);
                 }
             } else {
                 sendError(node, "Signal client: please configure an account.");
@@ -171,8 +173,9 @@ module.exports = function(RED) {
                     const registrationCode = config.registrationCode.replace("-", "");
                     await accountManager.registerSingleDevice(registrationCode);
                     sendSuccess(node, "Signal client: registration performed.");
-                } catch (err) {
-                    sendError(node, `Signal client error: ${err.toString()}`);
+                } catch (err) {                   
+                    node.error(`Signal client error: ${JSON.stringify(err)}`);
+                    node.send([null, { payload: err }]);
                 }
             } else {
                 sendError(node, "Signal client: please configure an account and the registration code.");
@@ -183,7 +186,7 @@ module.exports = function(RED) {
 
     /**
      * Send a message
-     * 
+     *
      * Result on success:
      * {
      *     "successfulIdentifiers": ["+34634058xxx"],
@@ -195,7 +198,7 @@ module.exports = function(RED) {
      *         "data": [10, 19, 72, 97, 108, 108, 111, ...]
      *     }
      * }
-     * 
+     *
      * Result on error:
      * {
      *     "successfulIdentifiers": [],
@@ -213,7 +216,7 @@ module.exports = function(RED) {
      *         "data": [10, 19, 72, 97, 108, 108, 111, ...]
      *     }
      * }
-     * 
+     *
      * @param config Configuration object
      */
     function SendNode(config) {
@@ -238,13 +241,13 @@ module.exports = function(RED) {
                     const returnMessage = {
                         payload: {
                             receiverNumber: config.receiverNumber,
-                            content: msg.payload.content,    
-                        }
-                    }
+                            content: msg.payload.content,
+                        },
+                    };
                     node.send([returnMessage, null]);
                 } catch (err) {
-                    node.error(`Signal client error: ${err.toString()}`);
-                    node.send([null, err]);
+                    node.error(`Signal client error: ${JSON.stringify(err)}`);
+                    node.send([null, { payload: err }]);
                 }
             } else {
                 node.error("Signal client: please configure an acoount, a receiver number and provide an payload in the message.");
@@ -255,7 +258,7 @@ module.exports = function(RED) {
 
     /**
      * Receive a message
-     * 
+     *
      * Raw event data:
      * {
      *     "type": "message",
@@ -271,7 +274,7 @@ module.exports = function(RED) {
      *         }
      *     }
      * }
-     * 
+     *
      * @param config Configuration object
      */
     function ReceiveNode(config) {
@@ -307,7 +310,7 @@ module.exports = function(RED) {
                                 senderNumber: event.data.source,
                                 senderUuid: event.data.sourceUuid,
                             },
-                            originalMessage: event.data
+                            originalMessage: event.data,
                         };
                         node.send(message);
 
@@ -315,8 +318,8 @@ module.exports = function(RED) {
                     });
                 })
                 .catch(function(err) {
-                    node.error(`Signal client error: ${err.toString()}`);
-                    node.send([null, err]);
+                    node.error(`Signal client error: ${JSON.stringify(err)}`);
+                    node.send([null, { payload: err }]);
                 });
         } else {
             node.error("Signal client: please configure an acoount.");
@@ -341,5 +344,5 @@ module.exports = function(RED) {
             node.error(`Signal client: action received for an invalid node id '${req.params.id}'`);
             res.sendStatus(404);
         }
-    });    
+    });
 };

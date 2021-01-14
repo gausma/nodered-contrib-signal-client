@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] 2021-01-14
+### Fixed
+- Show error details in log and 2nd output ([#4](https://github.com/gausma/nodered-contrib-signal-client/issues/4)).
+- Typos in help ([#6](https://github.com/gausma/nodered-contrib-signal-client/issues/6)).
+
 ## [2.0.1] 2021-01-11
 ### Fixed
 - Docs.
@@ -9,8 +14,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Inject button for the registration nodes (input removed).
 - Outputs for the registration nodes to signal success or errors.
-- Sender node: input message interface extended for future data. Outputs to singnal success or errors.
-- Receiver node: Output message content extended. Outputs to singnal success or errors.
+- Sender node: input message interface extended for future data. Outputs to signal success or errors.
+- Receiver node: Output message content extended. Outputs to signal success or errors.
 
 ### Added
 - Example flows
