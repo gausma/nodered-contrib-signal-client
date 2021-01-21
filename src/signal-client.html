@@ -103,7 +103,7 @@
             enabled: function () {
                 return !this.changed
             },
-            onclick: function () {              
+            onclick: function () {
                 inject(this);
             }
         },
@@ -147,10 +147,10 @@
             enabled: function () {
                 return !this.changed
             },
-            onclick: function () {              
+            onclick: function () {
                 inject(this);
             }
-        },        
+        },
         icon: "signal-registration.png",
         label: function () {
             return this.name || "request-voice";
@@ -191,10 +191,10 @@
             enabled: function () {
                 return !this.changed
             },
-            onclick: function () {              
+            onclick: function () {
                 inject(this);
             }
-        },        
+        },
         icon: "signal-registration.png",
         label: function () {
             return this.name || "register";
@@ -278,6 +278,7 @@
         color: '#5692f3',
         defaults: {
             account: { value: "", type: "account" },
+            downloadDirectory: { value: "", required: false },
             verboseLogging: { value: false },
             name: { value: "", required: false },
         },
@@ -294,6 +295,10 @@
     <div class="form-row">
         <label for="node-input-account"><i class="fa fa-globe"></i> Account</label>
         <input id="node-input-account">
+    </div>
+    <div class="form-row">
+        <label for="node-input-downloadDirectory"><i class="fa fa-download"></i> Download Directory</label>
+        <input type="text" id="node-input-downloadDirectory" placeholder="Download Directory">
     </div>
     <div class="form-row">
         <label for="node-input-verboseLogging"><i class="fa fa-search"></i> Verbose Logging</label>

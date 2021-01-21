@@ -17,7 +17,7 @@ The nodes are tested with `Node.js v14.15.3` and `Node-RED v1.2.6` on Windows an
  - [@gausma/libsignal-service-javascript](https://github.com/gausma/nodered-contrib-signal-client)
  - [node-localstorage](https://github.com/lmaccherone/node-localstorage)
  - [bytebuffer](https://github.com/protobufjs/bytebuffer.js)
-
+ 
 # Changelog
 Changes can be followed [here](/CHANGELOG.md).
 
@@ -34,7 +34,7 @@ The configuration of a Signal Communicator registration takes place in an accoun
 
 The password is an arbitrary string used for authentication against the Signal API. It will be registered with the Signal servers as part of the registration process.
 
-The registration data determined are saved in the Node-RED settings. A directory is created within your Node-RED settings. The directory must be unique across all accounts. You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red/signal,  Windows: C:\Users\USER\.node-red\signal)
+The registration data determined are saved in the Node-RED settings. A directory is created within your Node-RED settings. The directory must be unique across all accounts. You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red/signal,  Windows: C:\Users\USER\.node-red\signal).
 
 Live Server: For safety, a Signal staging server (testing server) can be used  while you carry out your experiments. This means that it will only send and receive messages from other clients using the staging server! 
 
@@ -83,18 +83,23 @@ The "Verbose Logging" checkbox is activated for extended log outputs in the Node
 
 <img src="images/SendNodeConfiguration.png" title="Send node configuration" />
 
-The message to be sent is transferred in the payload as string when the node is executed. A simple flow can look like this:
+A text (payload.content) and one or more attachments in the form of files can be sent simultaneously in a message. To send files, the paths and file names are entered in the payload.attachments array. The paths are specified in absolute or relative terms (based on the user directory). You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red/signal,  Windows: C:\Users\USER\.node-red\signal). The files can be of any type. If they are sent to a receive node, they can be stored 1:1. A Signal messegner (e.g. on the cell phone) interprets the files, if known. Otherwise he offers them for download.
+
+A simple flow can look like this:
 
 <img src="images/SendFlow1.png" title="Send flow 1" />
 
 ### Interface
-| I/O      | Execution       | Message Properties     | Type   | Description                 |
-| :------- | :-------------- | :--------------------- | :----- | :-------------------------- |
-| Input    | Send message    | payload.content        | string | Message to send             |
-|          |                 | payload.receiverNumber | string | The receiver's phone number (optional) |
-| Output_1 | Successful sent | payload.receiverNumber | string | Used receiver's phone number, either from the message or configured |
-|          |                 | payload.content        | string | Sent message                |
-| Output_2 | Error on sent   | payload                | object | Failure message object      |
+| I/O      | Execution       | Message Properties     | Type   | Optional | Description                 |
+| :------- | :-------------- | :--------------------- | :----- | :------- | :-------------------------- |
+| Input    | Send message    | payload.receiverNumber | string | yes      | The receiver's phone number |
+|          |                 | payload.content        | string | no       | Message to send             |
+|          |                 | payload.attachments    | array  | yes      | Array of file paths (absolute or relative) |
+| Output_1 | Successful sent | payload.receiverNumber | string | no       | Used receiver's phone number, either from the message or configured |
+|          |                 | payload.senderNumber   | string | no       | The sender's phone number   |
+|          |                 | payload.content        | string | no       | Sent message                |
+|          |                 | payload.attachments    | array  | yes      | Array of used file paths    |
+| Output_2 | Error on sent   | payload                | object | no       | Failure message object      |
 
 ## Reveiving a message
 The "receive" node is used to receive a message.
@@ -103,25 +108,33 @@ The "receive" node is used to receive a message.
 
 A previously registered account is selected as receiver.
 
+Attachments are savend in the download directory. The donwload directory is specified in absolute or relative terms (based on the user directory). You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red/signal,  Windows: C:\Users\USER\.node-red\signal). If no download directory is specified, the attachments are copied to the root of the user directory.
+
 The "Verbose Logging" checkbox is activated for extended log outputs in the Node-RED log. The logs are not  shown in the "Debug messages" sidebar.
 
 <img src="images/ReceiveNodeConfiguration.png" title="Receive node configuration" />
 
-The received message is contained in the payload of the output. A simple flow can look like this:
+The received message is contained in the payload of the output.
+
+The attachments are saved in the download directory. One or more attachments can be received at the same time. They are saved with the filename and the extension of the sender. Attachments from a Signal messegner (e.g. on the cell phone) can have a cryptic name if they were created temporarily.
+
+A simple flow can look like this:
 
 <img src="images/ReceiveFlow1.png" title="Receive flow 1" />
 
 __To avoid problems ensure that you connect maximal one receiver node to one account.__
 
 ### Interface
-| I/O      | Execution          | Message Properties   | Type   | Description                        |
-| :------- | :----------------- | :------------------- | :----- | :--------------------------------- |
-| Input    | -                  | -                    | -      | -                                  |
-| Output_1 | Successful receive | payload.content      | string | Received message content           |
-|          |                    | payload.senderNumber | string | The sender's phone number          |
-|          |                    | payload.senderUuid   | string | The sender's unique identification |
-|          |                    | originalMessage      | string | Original received object from the underlying library [@gausma/libsignal-service-javascript](https://github.com/gausma/nodered-contrib-signal-client) |
-| Output_2 | Error on receive   | payload              | object | Failure message object             |
+| I/O      | Execution          | Message Properties     | Type   | Optional | Description                        |
+| :------- | :----------------- | :--------------------- | :----- | :------- | :--------------------------------- |
+| Input    | -                  | -                      | -      | -        | -                                  |
+| Output_1 | Successful receive | payload.content        | string | no       | Received message content           |
+|          |                    | payload.senderNumber   | string | no       | The sender's phone number          |
+|          |                    | payload.senderUuid     | string | no       | The sender's unique identification |
+|          |                    | payload.receiverNumber | string | no       | The receiver's phone number        |
+|          |                    | payload.attachments    | array  | yes      | Array of the received file paths   |
+|          |                    | originalMessage        | string | no       | Original received object from the underlying library [@gausma/libsignal-service-javascript](https://github.com/gausma/nodered-contrib-signal-client) |
+| Output_2 | Error on receive   | payload                | object | -        | Failure message object             |
 
 # Examples
 
@@ -154,13 +167,33 @@ You can send a message to your friend with the send node. In the example, the me
 
 Example: 03_simple-send
 
+This example can easily be extended to send attachments. The payload is written as follows:
+```
+{
+    "receiverNumber": "+4955512345678",
+    "content": "Hello MAG",
+    "attachments": [
+        "example/image.png",
+        "example/music.mp3"
+    ]
+}
+```
+
+Note: On Windows systems, a double backslash must be used in strings when noting a path (e.g. "example\\image.png")
+
 ## 4 Simple echo
-A simple flow: the received message is returned to the sender. This flow represents the basis for a command flow and can be expanded accordingly. See further examples.
+A simple flow: the received message is returned to the sender. This flow represents the basis for a command flow and can be expanded accordingly. 
+
+It must be ensured that the sender number is assigned to the recipient number so that the message can be returned to the sender. Content of the function node:
+```
+msg.payload.receiverNumber = msg.payload.senderNumber;
+delete msg.payload.senderNumber;
+return msg;
+```
 
 <img src="images/Example04.png" title="Example 04" />
 
 Example: 04_simple-echo
-
 
 # License
 [<img src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPLv3" >](http://www.gnu.org/licenses/gpl-3.0.html)

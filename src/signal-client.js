@@ -5,6 +5,7 @@
 const libsignal = require("@gausma/libsignal-service-javascript");
 const Storage = require("./LocalSignalProtocolStore.js");
 const path = require("path");
+const fs = require("fs");
 
 const signalDir = "signal";
 
@@ -76,7 +77,11 @@ module.exports = function(RED) {
         this.liveServer = config.liveServer;
         this.accountName = config.accountName;
 
-        const dataStoreDirectory = path.join(RED.settings.userDir, signalDir, this.dataStoreDirectory);
+        const dataStoreDirectory = path.join(
+            RED.settings.userDir,
+            signalDir,
+            this.dataStoreDirectory,
+        );
         this.protocolStore = new libsignal.ProtocolStore(new Storage(dataStoreDirectory));
         this.protocolStore.load(); // Todo await?
     }
@@ -92,7 +97,12 @@ module.exports = function(RED) {
 
         node.on("input", async function() {
             this.account = RED.nodes.getNode(config.account);
-            if (this.account && this.account.phoneNumber && this.account.password && this.account.protocolStore) {
+            if (
+                this.account &&
+                this.account.phoneNumber &&
+                this.account.password &&
+                this.account.protocolStore
+            ) {
                 try {
                     const configuration = getConfiguration(this.account.liveServer);
                     const accountManager = new libsignal.AccountManager(
@@ -123,7 +133,12 @@ module.exports = function(RED) {
 
         node.on("input", async function() {
             this.account = RED.nodes.getNode(config.account);
-            if (this.account && this.account.phoneNumber && this.account.password && this.account.protocolStore) {
+            if (
+                this.account &&
+                this.account.phoneNumber &&
+                this.account.password &&
+                this.account.protocolStore
+            ) {
                 try {
                     const configuration = getConfiguration(this.account.liveServer);
                     const accountManager = new libsignal.AccountManager(
@@ -175,7 +190,10 @@ module.exports = function(RED) {
                     sendError(node, `Signal client error: ${JSON.stringify(err)}`);
                 }
             } else {
-                sendError(node, "Signal client: please configure an account and the registration code.");
+                sendError(
+                    node,
+                    "Signal client: please configure an account and the registration code.",
+                );
             }
         });
     }
@@ -221,7 +239,7 @@ module.exports = function(RED) {
         var node = this;
         node.on("input", async function(msg) {
             this.account = RED.nodes.getNode(config.account);
-            
+
             let receiverNumber = config.receiverNumber;
             if (msg.payload && msg.payload.receiverNumber) {
                 receiverNumber = msg.payload.receiverNumber;
@@ -230,12 +248,53 @@ module.exports = function(RED) {
             if (this.account && this.account.protocolStore && receiverNumber && msg.payload) {
                 try {
                     const configuration = getConfiguration(this.account.liveServer);
-                    const messageSender = new libsignal.MessageSender(this.account.protocolStore, configuration);
+                    const messageSender = new libsignal.MessageSender(
+                        this.account.protocolStore,
+                        configuration,
+                    );
                     await messageSender.connect();
-                    const result = await messageSender.sendMessageToNumber({
+
+                    // Attachments
+                    const attachments = [];
+                    const attachmentPaths = [];
+                    if (msg.payload.attachments) {
+                        if (Array.isArray(msg.payload.attachments)) {
+                            for (let attachment of msg.payload.attachments) {
+                                let attachmentPath = attachment;
+                                if (!path.isAbsolute(attachment)) {
+                                    attachmentPath = path.join(RED.settings.userDir, attachment);
+                                }
+                                if (fs.existsSync(attachmentPath)) {
+                                    const file = await libsignal.AttachmentHelper.loadFile(
+                                        attachmentPath,
+                                    );
+                                    attachments.push(file);
+                                    attachmentPaths.push(attachmentPath);
+                                } else {
+                                    sendError(
+                                        node,
+                                        `Signal client: invalid attachment file '${attachmentPath}'`,
+                                    );
+                                    return;
+                                }
+                            }
+                        } else {
+                            sendError(node, `Signal client: payload.attachment must be an array`);
+                            return;
+                        }
+                    }
+
+                    // Message
+                    const message = {
                         number: receiverNumber,
                         body: msg.payload.content,
-                    });
+                    };
+
+                    if (attachments.length > 0) {
+                        message.attachments = attachments;
+                    }
+
+                    const result = await messageSender.sendMessageToNumber(message);
 
                     if (config.verboseLogging) {
                         node.log(`Signal client message sent: ${JSON.stringify(result)}`);
@@ -244,15 +303,24 @@ module.exports = function(RED) {
                     const returnMessage = {
                         payload: {
                             receiverNumber: receiverNumber,
+                            senderNumber: this.account.phoneNumber,
                             content: msg.payload.content,
                         },
                     };
+
+                    if (attachmentPaths.length > 0) {
+                        returnMessage.payload.attachments = attachmentPaths;
+                    }
+
                     node.send([returnMessage, null]);
                 } catch (err) {
                     sendError(node, `Signal client error: ${JSON.stringify(err)}`);
                 }
             } else {
-                sendError(node, "Signal client: please configure an account and provide an payload with content in the message. The receiver number must be configured or a property in the payload.");
+                sendError(
+                    node,
+                    "Signal client: please configure an account and provide an payload with content in the message. The receiver number must be configured or a property in the payload.",
+                );
             }
         });
     }
@@ -290,33 +358,123 @@ module.exports = function(RED) {
             delete messageReceivers[node.id];
         });
 
-        this.account = RED.nodes.getNode(config.account);
-        if (this.account && this.account.protocolStore) {
-            const configuration = getConfiguration(this.account.liveServer);
-            const serverTrustRoot = getServerTrustRoot(this.account.liveServer);
-            const messageReceiver = new libsignal.MessageReceiver(this.account.protocolStore, null, {}, configuration, serverTrustRoot);
+        var account = RED.nodes.getNode(config.account);
+        if (account && account.protocolStore) {
+            const configuration = getConfiguration(account.liveServer);
+            const serverTrustRoot = getServerTrustRoot(account.liveServer);
+            const messageReceiver = new libsignal.MessageReceiver(
+                account.protocolStore,
+                null,
+                {},
+                configuration,
+                serverTrustRoot,
+            );
 
             messageReceivers[node.id] = messageReceiver;
 
             messageReceiver
                 .connect()
                 .then(function() {
-                    messageReceiver.addEventListener("message", function(event) {
+                    messageReceiver.addEventListener("message", async function(event) {
                         if (config.verboseLogging) {
-                            node.log(`Signal client message received: ${JSON.stringify(event)}`);
+                            console.log(event);
+                            const att = event.data.message.attachments;
+                            delete event.data.message.attachments;
+                            node.log(JSON.stringify(event));
+                            event.data.message.attachments = att;
                         }
 
+                        // Attachments
+                        let attachmentPaths = [];
+                        let downloadDirectory = config.downloadDirectory;
+                        if (!path.isAbsolute(config.downloadDirectory)) {
+                            downloadDirectory = path.join(
+                                RED.settings.userDir,
+                                config.downloadDirectory,
+                            );
+                        }
+                        if (fs.existsSync(downloadDirectory)) {
+                            const attachmentPromises = [];
+                            event.data.message.attachments.map(attachment => {
+                                const attachmentPromise = messageReceiver
+                                .handleAttachment(attachment)
+                                .then(attachmentPointer => {
+                                    return libsignal.AttachmentHelper.saveFile(
+                                        attachmentPointer,
+                                        downloadDirectory,
+                                    );
+                                })
+                                .catch((err) => {
+                                    node.error(`Signal client error: ${err}`)
+                                });
+                                attachmentPromises.push(attachmentPromise); 
+                            });
+
+                            attachmentPaths = await Promise.all(attachmentPromises);
+                        } else {
+                            node.error(`Signal client error: invalid download directory: "${downloadDirectory}"`);
+                        }
+
+                        // Message
                         const message = {
                             payload: {
                                 content: event.data.message.body,
                                 senderNumber: event.data.source,
                                 senderUuid: event.data.sourceUuid,
+                                receiverNumber: account.phoneNumber,
                             },
                             originalMessage: event.data,
                         };
+                        if (attachmentPaths.length > 0) {
+                            message.payload.attachments = attachmentPaths;
+                        }
+
                         node.send(message);
 
                         event.confirm();
+                    });
+
+                    messageReceiver.addEventListener("configuration", ev => {
+                        node.log("Received configuration sync: ", ev.configuration);
+                        ev.confirm();
+                    });
+
+                    messageReceiver.addEventListener("group", ev => {
+                        node.log("Received group details: ", ev.groupDetails);
+                        ev.confirm();
+                    });
+
+                    messageReceiver.addEventListener("contact", ev => {
+                        node.log(
+                            `Received contact for ${ev.contactDetails.number} who has name ${ev.contactDetails.name}`,
+                        );
+                        ev.confirm();
+                    });
+
+                    messageReceiver.addEventListener("verified", ev => {
+                        node.log("Received verification: ", ev.verified);
+                        ev.confirm();
+                    });
+
+                    messageReceiver.addEventListener("sent", ev => {
+                        node.log(
+                            `Message successfully sent from device ${ev.data.deviceId} to ${ev.data.destination} at timestamp ${ev.data.timestamp}`,
+                        );
+                        ev.confirm();
+                    });
+
+                    messageReceiver.addEventListener("delivery", ev => {
+                        node.log(
+                            `Message successfully delivered to number ${ev.deliveryReceipt.source} and device ${ev.deliveryReceipt.sourceDevice} at timestamp ${ev.deliveryReceipt.timestamp}`,
+                        );
+                        ev.confirm();
+                    });
+
+                    messageReceiver.addEventListener("read", ev => {
+                        node.log(
+                            `Message read on ${ev.read.reader} at timestamp ${ev.read.timestamp}`,
+                        );
+                        ev.confirm();
                     });
                 })
                 .catch(function(err) {
@@ -331,14 +489,19 @@ module.exports = function(RED) {
     /**
      * Action route to trigger nodes. The actions are send by node buttons (see client code).
      */
-    RED.httpAdmin.post("/signal-client/:id", RED.auth.needsPermission("inject.write"), function(req, res) {
+    RED.httpAdmin.post("/signal-client/:id", RED.auth.needsPermission("inject.write"), function(
+        req,
+        res,
+    ) {
         var node = RED.nodes.getNode(req.params.id);
         if (node != null) {
             try {
                 node.receive();
                 res.sendStatus(200);
             } catch (err) {
-                node.error(`Signal client: action for node '${req.params.id}' failed: ${err.toString()}`);
+                node.error(
+                    `Signal client: action for node '${req.params.id}' failed: ${err.toString()}`,
+                );
                 res.sendStatus(500);
             }
         } else {
