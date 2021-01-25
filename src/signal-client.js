@@ -287,13 +287,23 @@ module.exports = function(RED) {
                     // Message
                     const message = {
                         number: receiverNumber,
-                        body: msg.payload.content,
+                        body: msg.payload.content
                     };
 
                     if (attachments.length > 0) {
                         message.attachments = attachments;
                     }
 
+                    if (msg.payload.expire) {
+                        if (Number.isInteger(msg.payload.expire) && (msg.payload.expire > 0)) {
+                            message.expireTimer = msg.payload.expire;
+                        } else {
+                            sendError(node, `Signal client: invalid payload.expire duration: '${msg.payload.expire}'`);
+                            return;                            
+                        }
+                    }
+
+                    // Send
                     const result = await messageSender.sendMessageToNumber(message);
 
                     if (config.verboseLogging) {
@@ -310,6 +320,10 @@ module.exports = function(RED) {
 
                     if (attachmentPaths.length > 0) {
                         returnMessage.payload.attachments = attachmentPaths;
+                    }
+
+                    if (message.expireTimer) {
+                        returnMessage.payload.expire = message.expireTimer;
                     }
 
                     node.send([returnMessage, null]);
@@ -425,8 +439,13 @@ module.exports = function(RED) {
                             },
                             originalMessage: event.data,
                         };
+
                         if (attachmentPaths.length > 0) {
                             message.payload.attachments = attachmentPaths;
+                        }
+
+                        if (event.data.message.expireTimer) {
+                            message.payload.expire = event.data.message.expireTimer;
                         }
 
                         node.send(message);

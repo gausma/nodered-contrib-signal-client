@@ -85,21 +85,25 @@ The "Verbose Logging" checkbox is activated for extended log outputs in the Node
 
 A text (payload.content) and one or more attachments in the form of files can be sent simultaneously in a message. To send files, the paths and file names are entered in the payload.attachments array. The paths are specified in absolute or relative terms (based on the user directory). You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red/signal,  Windows: C:\Users\USER\.node-red\signal). The files can be of any type. If they are sent to a receive node, they can be stored 1:1. A Signal messegner (e.g. on the cell phone) interprets the files, if known. Otherwise he offers them for download.
 
+Use disappearing messages to keep your message history tidy in your Signal communicator. The message will disappear from your devices after the timer has elapsed. Disappearing messages can be managed by anyone in the chat. Use the payload.expire property to the "send" node to configure the settings for that chat. The setting applies to any new message after the timer has been set or modified for all paticipants.
+
 A simple flow can look like this:
 
 <img src="images/SendFlow1.png" title="Send flow 1" />
 
 ### Interface
-| I/O      | Execution       | Message Properties     | Type   | Optional | Description                 |
-| :------- | :-------------- | :--------------------- | :----- | :------- | :-------------------------- |
-| Input    | Send message    | payload.receiverNumber | string | yes      | The receiver's phone number |
-|          |                 | payload.content        | string | no       | Message to send             |
+| I/O      | Execution       | Message Properties     | Type   | Optional | Description                                |
+| :------- | :-------------- | :--------------------- | :----- | :------- | :----------------------------------------- |
+| Input    | Send message    | payload.receiverNumber | string | yes      | The receiver's phone number                |
+|          |                 | payload.content        | string | no       | Message to send                            |
 |          |                 | payload.attachments    | array  | yes      | Array of file paths (absolute or relative) |
+|          |                 | payload.expire         | number | yes      | Expire timeout                             |
 | Output_1 | Successful sent | payload.receiverNumber | string | no       | Used receiver's phone number, either from the message or configured |
-|          |                 | payload.senderNumber   | string | no       | The sender's phone number   |
-|          |                 | payload.content        | string | no       | Sent message                |
-|          |                 | payload.attachments    | array  | yes      | Array of used file paths    |
-| Output_2 | Error on sent   | payload                | object | no       | Failure message object      |
+|          |                 | payload.senderNumber   | string | no       | The sender's phone number                  |
+|          |                 | payload.content        | string | no       | Sent message                               |
+|          |                 | payload.attachments    | array  | yes      | Array of used file paths                   |
+|          |                 | payload.expire         | number | yes      | Expire timeout                             |
+| Output_2 | Error on sent   | payload                | object | no       | Failure message object                     |
 
 ## Reveiving a message
 The "receive" node is used to receive a message.
@@ -118,6 +122,8 @@ The received message is contained in the payload of the output.
 
 The attachments are saved in the download directory. One or more attachments can be received at the same time. They are saved with the filename and the extension of the sender. Attachments from a Signal messegner (e.g. on the cell phone) can have a cryptic name if they were created temporarily.
 
+If the setting for disappearing messages has been changed in the chat, a message will be sent. The new timer value (payload.expire) is shown in the output of the "receive" node. So that the timeout set by the client does not change, you can save it temporarily and transfer it with the next send (see exmaple 5).
+
 A simple flow can look like this:
 
 <img src="images/ReceiveFlow1.png" title="Receive flow 1" />
@@ -125,16 +131,17 @@ A simple flow can look like this:
 __To avoid problems ensure that you connect maximal one receiver node to one account.__
 
 ### Interface
-| I/O      | Execution          | Message Properties     | Type   | Optional | Description                        |
-| :------- | :----------------- | :--------------------- | :----- | :------- | :--------------------------------- |
-| Input    | -                  | -                      | -      | -        | -                                  |
-| Output_1 | Successful receive | payload.content        | string | no       | Received message content           |
-|          |                    | payload.senderNumber   | string | no       | The sender's phone number          |
-|          |                    | payload.senderUuid     | string | no       | The sender's unique identification |
-|          |                    | payload.receiverNumber | string | no       | The receiver's phone number        |
-|          |                    | payload.attachments    | array  | yes      | Array of the received file paths   |
+| I/O      | Execution          | Message Properties     | Type   | Optional | Description                                    |
+| :------- | :----------------- | :--------------------- | :----- | :------- | :--------------------------------------------- |
+| Input    | -                  | -                      | -      | -        | -                                              |
+| Output_1 | Successful receive | payload.content        | string | no       | Received message content                       |
+|          |                    | payload.senderNumber   | string | no       | The sender's phone number                      |
+|          |                    | payload.senderUuid     | string | no       | The sender's unique identification             |
+|          |                    | payload.receiverNumber | string | no       | The receiver's phone number                    |
+|          |                    | payload.attachments    | array  | yes      | Array of the received file paths               |
+|          |                    | payload.expire         | number | yes      | Expire timeout, set by the sender (in seconds) |
 |          |                    | originalMessage        | string | no       | Original received object from the underlying library [@gausma/libsignal-service-javascript](https://github.com/gausma/nodered-contrib-signal-client) |
-| Output_2 | Error on receive   | payload                | object | -        | Failure message object             |
+| Output_2 | Error on receive   | payload                | object | -        | Failure message object                         |
 
 # Examples
 
@@ -194,6 +201,15 @@ return msg;
 <img src="images/Example04.png" title="Example 04" />
 
 Example: 04_simple-echo
+
+## 5 Expire timeout
+
+So that the timeout for disappearing messages set by the client does not change, you can save it to a global variable and transfer it with the next send.
+
+<img src="images/Example05.png" title="Example 05" />
+
+Example: 05_expire_timeout
+
 
 # License
 [<img src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPLv3" >](http://www.gnu.org/licenses/gpl-3.0.html)

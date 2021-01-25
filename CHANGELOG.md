@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] 2021-01-25
+### Added
+- Support for disappearing messages (auto delete) ([#14](https://github.com/gausma/nodered-contrib-signal-client/issues/14)).
+
 ## [2.2.0] 2021-01-21
 ### Added
 - Send and receive attachments ([#8](https://github.com/gausma/nodered-contrib-signal-client/issues/8)).
