@@ -1,9 +1,10 @@
 # nodered-contrib-signal-client
-[![Platform](https://img.shields.io/badge/platform-Node--RED-red)](https://nodered.org)
+[![Platform](https://img.shields.io/badge/platform-Node--RED-red?logo=node-red)](https://nodered.org)
 [![License](https://img.shields.io/github/license/gausma/nodered-contrib-signal-client)](https://github.com/gausma/nodered-contrib-signal-client/blob/main/LICENSE)
 [![Downloads](https://img.shields.io/npm/dm/nodered-contrib-signal-client)](https://www.npmjs.com/package/nodered-contrib-signal-client)
 [![npm](https://img.shields.io/npm/v/nodered-contrib-signal-client?logo=npm)](https://www.npmjs.com/package/nodered-contrib-signal-client)
 [![Rating](https://img.shields.io/github/stars/gausma/nodered-contrib-signal-client?logo=github)](https://github.com/gausma/nodered-contrib-signal-client)
+[![github](https://img.shields.io/badge/platform-github-lightgray?logo=github)](https://github.com/gausma/nodered-contrib-signal-client)
 
 
 [Signal](https://signal.org) communicator client nodes to use the more secure messenger in Node-RED.
