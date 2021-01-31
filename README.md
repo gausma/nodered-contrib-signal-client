@@ -1,7 +1,21 @@
 # nodered-contrib-signal-client
+[![Platform](https://img.shields.io/badge/platform-Node--RED-red)](https://nodered.org)
+[![License](https://img.shields.io/github/license/gausma/nodered-contrib-signal-client)](https://github.com/gausma/nodered-contrib-signal-client/blob/main/LICENSE)
+[![Downloads](https://img.shields.io/npm/dm/nodered-contrib-signal-client)](https://www.npmjs.com/package/nodered-contrib-signal-client)
+[![npm](https://img.shields.io/npm/v/nodered-contrib-signal-client?logo=npm)](https://www.npmjs.com/package/nodered-contrib-signal-client)
+[![Rating](https://img.shields.io/github/stars/gausma/nodered-contrib-signal-client?logo=github)](https://github.com/gausma/nodered-contrib-signal-client)
+
+
 [Signal](https://signal.org) communicator client nodes to use the more secure messenger in Node-RED.
 
 This is a third-party effort, and is NOT a part of the official [Signal](https://signal.org) project or any other project of [Open Whisper Systems](https://whispersystems.org).
+
+# Thanks for your donation
+If you want to support this free project, any help is welcome. You can donate by clicking one of the following links:
+
+[![PayPal](https://img.shields.io/badge/Donate-PayPay-blue)](https://www.paypal.me/gausma)
+
+<a href="https://www.buymeacoffee.com/gausma" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 # Installation
 [![NPM](https://nodei.co/npm/nodered-contrib-signal-client.png?downloads=true)](https://nodei.co/npm/nodered-contrib-signal-client/)
@@ -212,6 +226,6 @@ Example: 05_expire_timeout
 
 
 # License
-[<img src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPLv3" >](http://www.gnu.org/licenses/gpl-3.0.html)
+[<img src="https://www.gnu.org/graphics/gplv3-127x51.png" alt="GPLv3">](http://www.gnu.org/licenses/gpl-3.0.html)
 
 nodered-contrib-signal-client is a free software project licensed under the GNU General Public License v3.0 (GPLv3) by Martin Gaus.
