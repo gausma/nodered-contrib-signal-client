@@ -111,7 +111,11 @@ module.exports = function(RED) {
                         this.account.protocolStore,
                         configuration,
                     );
-                    await accountManager.requestSMSVerification();
+                    if (config.captcha === "") {
+                        await accountManager.requestSMSVerification();
+                    } else {
+                        await accountManager.requestSMSVerification(config.captcha);
+                    }
                     sendSuccess(node, "Signal client: registration code requested via sms.");
                 } catch (err) {
                     sendError(node, `Signal client error: ${JSON.stringify(err)}`);
@@ -147,7 +151,11 @@ module.exports = function(RED) {
                         this.account.protocolStore,
                         configuration,
                     );
-                    await accountManager.requestVoiceVerification();
+                    if (config.captcha === "") {
+                        await accountManager.requestVoiceVerification();
+                    } else {
+                        await accountManager.requestVoiceVerification(config.captcha);
+                    }
                     sendSuccess(node, "Signal client: registration code requested via voice call.");
                 } catch (err) {
                     sendError(node, `Signal client error: ${JSON.stringify(err)}`);

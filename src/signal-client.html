@@ -95,6 +95,7 @@
         defaults: {
             server: { value: "", type: "remote-server" },
             account: { value: "", type: "account" },
+            captcha: { value: "", required: false },
             name: { value: "", required: false },
         },
         inputs: 0,
@@ -120,6 +121,10 @@
         <input id="node-input-account">
     </div>
     <div class="form-row">
+        <label for="node-input-captcha"><i class="fa fa-refresh"></i> Captcha Code</label>
+        <input type="text" id="node-input-captcha" placeholder="Optional captcha code (see documentation)">
+    </div>    
+    <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -139,6 +144,7 @@
         defaults: {
             server: { value: "", type: "remote-server" },
             account: { value: "", type: "account" },
+            captcha: { value: "", required: false },
             name: { value: "", required: false },
         },
         inputs: 0,
@@ -163,6 +169,10 @@
         <label for="node-input-account"><i class="fa fa-globe"></i> Account</label>
         <input id="node-input-account">
     </div>
+    <div class="form-row">
+        <label for="node-input-captcha"><i class="fa fa-refresh"></i> Captcha Code</label>
+        <input type="text" id="node-input-captcha" placeholder="Optional captcha code (see documentation)">
+    </div>    
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">

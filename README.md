@@ -45,6 +45,8 @@ First, you'll request a registration code from the Signal server that you are au
 
 <img src="images/RegistrationRequestNodes.png" title="Request Nodes" />
 
+<img src="images/RegistrationRequestSMSConfiguration.png" title="Account Configuration" />
+
 The configuration of a Signal Communicator registration takes place in an account. An Account is tied to a phone number. When experimenting you probably want to get a temporary phone number via an online service like Google Voice rather than clobbering the keys for your own phone.
 
 The password is an arbitrary string used for authentication against the Signal API. It will be registered with the Signal servers as part of the registration process.
@@ -53,7 +55,24 @@ The registration data determined are saved in the Node-RED settings. A directory
 
 Live Server: For safety, a Signal staging server (testing server) can be used  while you carry out your experiments. This means that it will only send and receive messages from other clients using the staging server! 
 
-<img src="images/RegistrationRequestConfiguration.png" title="Request SMS Configuration" />
+<img src="images/RegistrationRequestAccountConfiguration.png" title="Account Configuration" />
+
+### Registration with Captcha
+Sometimes an error message is displayed in the debug sidbar that looks something like this:
+```
+Signal client error: {"name":"HTTPError","code":402,"response":"<html>\n<head>\n<meta http-equiv=\"Content-Type\"
+ content=\"text/html;charset=utf-8\"/>\n<title>Error 402 Payment Required</title>\n</head>\n<body><h2>HTTP ERROR 402 
+Payment Required</h2>\n<table>\n<tr><th>URI:</th><td>/v1/accounts/sms/code/+48*********</td></tr>\n<tr>
+<th>STATUS:</th><td>402</td></tr>\n<tr><th>MESSAGE:</th><td>Payment Required</td></tr>\n<tr><th>SERVLET:
+</th><td>io.dropwizard.jersey.setup.JerseyServletContainer-*******</td></tr>\n</table>\n\n</body>\n</html>\n"}
+```
+
+1. Open https://signalcaptchas.org/registration/generate.html in your favorite browser
+2. Open the browser's developer console (see https://developers.google.com/web/tools/chrome-devtools/open)
+3. Answer the captcha
+4. On the developer console, find a line that looks like this: ... “signalcaptcha://{captcha code}” ... Copy the captcha code into the corresponding field.
+5. Deploy and repeat the registration
+
 
 ### Interface
 | I/O      | Execution          | Message Properties | Type   | Description     |
