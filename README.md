@@ -37,6 +37,12 @@ The nodes are tested with `Node.js v14.15.3` and `Node-RED v1.2.6` on Windows an
 Changes can be followed [here](/CHANGELOG.md).
 
 # Usage
+The Signal app on a smart phone is bound to a phone number. To use the Node-RED signal nodes, a phone number must be registered for a so-called account, which is used to authenticate the sender and receiver nodes. A phone number can be used either for a mobile phone or for a node account. Multiple devices or accounts cannot be used with one phone number.
+
+But there's no reason to give Signal your mobile phone number. By providing Signal with any phone number at which you can receive an SMS or voice message, you can register a Signal account at that other phone number. 
+
+For example keep your cell phone number and Signal account on your cell phone as it is. Use your land line number or some other number for your Node-RED system.
+
 ## Registration
 A Registration is required so that you can communicate via Signal. Registering an account takes place in two phases:
 
@@ -117,7 +123,7 @@ The "Verbose Logging" checkbox is activated for extended log outputs in the Node
 
 <img src="images/SendNodeConfiguration.png" title="Send node configuration" />
 
-A text (payload.content) and one or more attachments in the form of files can be sent simultaneously in a message. To send files, the paths and file names are entered in the payload.attachments array. The paths are specified in absolute or relative terms (based on the user directory). You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red/signal,  Windows: C:\Users\USER\.node-red\signal). The files can be of any type. If they are sent to a receive node, they can be stored 1:1. A Signal messegner (e.g. on the cell phone) interprets the files, if known. Otherwise he offers them for download.
+A text (payload.content) and one or more attachments in the form of files can be sent simultaneously in a message. To send files, the paths and file names are entered in the payload.attachments array. The paths are specified in absolute or relative terms (based on the user directory). You can find the directory in "$HOME/.node-red" (Linux: /home/USER/.node-red/signal,  Windows: C:\Users\USER\.node-red\signal). The files can be of any type. If they are sent to a receive node, they can be stored 1:1. A Signal messegner (e.g. on the mobile phone) interprets the files, if known. Otherwise he offers them for download.
 
 Use disappearing messages to keep your message history tidy in your Signal communicator. The message will disappear from your devices after the timer has elapsed. Disappearing messages can be managed by anyone in the chat. Use the payload.expire property to the "send" node to configure the settings for that chat. The setting applies to any new message after the timer has been set or modified for all paticipants.
 
@@ -154,7 +160,7 @@ The "Verbose Logging" checkbox is activated for extended log outputs in the Node
 
 The received message is contained in the payload of the output.
 
-The attachments are saved in the download directory. One or more attachments can be received at the same time. They are saved with the filename and the extension of the sender. Attachments from a Signal messegner (e.g. on the cell phone) can have a cryptic name if they were created temporarily.
+The attachments are saved in the download directory. One or more attachments can be received at the same time. They are saved with the filename and the extension of the sender. Attachments from a Signal messegner (e.g. on the mobile phone) can have a cryptic name if they were created temporarily.
 
 If the setting for disappearing messages has been changed in the chat, a message will be sent. The new timer value (payload.expire) is shown in the output of the "receive" node. So that the timeout set by the client does not change, you can save it temporarily and transfer it with the next send (see exmaple 5).
 
@@ -176,6 +182,7 @@ __To avoid problems ensure that you connect maximal one receiver node to one acc
 |          |                    | payload.expire         | number | yes      | Expire timeout, set by the sender (in seconds) |
 |          |                    | originalMessage        | string | no       | Original received object from the underlying library [@gausma/libsignal-service-javascript](https://github.com/gausma/nodered-contrib-signal-client) |
 | Output_2 | Error on receive   | payload                | object | -        | Failure message object                         |
+
 
 # Examples
 
