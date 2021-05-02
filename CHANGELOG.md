@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.4.1] 2021-05-02
+### Fixed
+- Voice registration (land line number) ([#21](https://github.com/gausma/nodered-contrib-signal-client/issues/21)).
+
 ## [2.4.1] 2021-03-15
 ### Changed
 - Documentation for the usage of Signal devices and accounts ([#18](https://github.com/gausma/nodered-contrib-signal-client/issues/18)).

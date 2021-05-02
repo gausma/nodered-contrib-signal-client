@@ -1,6 +1,6 @@
 {
     "name": "nodered-contrib-signal-client",
-    "version": "2.4.1",
+    "version": "2.4.2",
     "description": "Signal communicator client nodes for Node-RED",
     "author": "Martin Gaus",
     "license": "GPL-3.0",
@@ -10,7 +10,7 @@
         }
     },
     "dependencies": {
-        "@gausma/libsignal-service-javascript": "1.4.0",
+        "@gausma/libsignal-service-javascript": "1.4.1",
         "bytebuffer": "5.0.1",
         "node-localstorage": "2.1.6"
     },
